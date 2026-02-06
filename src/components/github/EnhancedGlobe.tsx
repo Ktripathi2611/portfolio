@@ -6,25 +6,26 @@ import { OrbitControls, Sphere, Html } from "@react-three/drei";
 import * as THREE from "three";
 import { adaptiveFPS } from "@/lib/webgl/AdaptiveFPSController";
 import Satellite from "../satellite/Satellite";
-import type { EnhancedCommit } from "@/lib/github/githubDataService";
+import type { GitHubRepo } from "@/lib/github/githubDataService";
+import { FaStar, FaCodeBranch, FaExternalLinkAlt } from "react-icons/fa";
 
 interface EnhancedGlobeProps {
-    commits: EnhancedCommit[];
-    selectedCommit: EnhancedCommit | null;
-    onCommitClick: (commit: EnhancedCommit) => void;
+    repos: GitHubRepo[];
+    selectedRepo: GitHubRepo | null;
+    onRepoClick: (repo: GitHubRepo) => void;
     heatmapMode: boolean;
 }
 
 interface MarkerProps {
     position: THREE.Vector3;
-    commit: EnhancedCommit;
+    repo: GitHubRepo;
     isSelected: boolean;
     onClick: () => void;
     heatmapMode: boolean;
 }
 
-// Activity Marker Component
-function ActivityMarker({ position, commit, isSelected, onClick, heatmapMode }: MarkerProps) {
+// Repository Marker Component
+function RepoMarker({ position, repo, isSelected, onClick, heatmapMode }: MarkerProps) {
     const meshRef = useRef<THREE.Mesh>(null);
     const [hovered, setHovered] = useState(false);
 
@@ -35,7 +36,9 @@ function ActivityMarker({ position, commit, isSelected, onClick, heatmapMode }: 
         }
     });
 
-    const color = getLanguageColor(commit.language);
+    const color = getLanguageColor(repo.language);
+    // Scale marker size based on stars
+    const markerSize = Math.min(0.04, 0.02 + (repo.stargazers_count / 100) * 0.02);
 
     return (
         <group position={position}>
@@ -45,7 +48,7 @@ function ActivityMarker({ position, commit, isSelected, onClick, heatmapMode }: 
                 onPointerLeave={() => setHovered(false)}
                 onClick={onClick}
             >
-                <sphereGeometry args={[0.02, 16, 16]} />
+                <sphereGeometry args={[markerSize, 16, 16]} />
                 <meshStandardMaterial
                     color={heatmapMode ? "#ff6600" : color}
                     emissive={heatmapMode ? "#ff6600" : color}
@@ -58,34 +61,46 @@ function ActivityMarker({ position, commit, isSelected, onClick, heatmapMode }: 
             {(hovered || isSelected) && (
                 <Html distanceFactor={10}>
                     <div
-                        className="px-4 py-3 rounded-lg text-xs pointer-events-none"
+                        className="px-4 py-3 rounded-lg text-xs pointer-events-auto cursor-pointer"
                         style={{
                             backgroundColor: "rgba(15, 15, 25, 0.95)",
                             border: `1px solid ${color}66`,
-                            minWidth: "220px",
-                            maxWidth: "280px",
+                            minWidth: "240px",
+                            maxWidth: "300px",
                             backdropFilter: "blur(10px)",
                         }}
+                        onClick={() => window.open(repo.html_url, '_blank')}
                     >
-                        <div className="font-semibold text-white text-sm mb-2">{commit.repo}</div>
-                        <div className="text-white/80 mb-2 line-clamp-2">{commit.message}</div>
-                        <div className="flex items-center justify-between text-xs">
-                            <span className="text-white/60">{new Date(commit.date).toLocaleDateString()}</span>
-                            {commit.stars > 0 && (
-                                <span className="text-yellow-400">⭐ {commit.stars}</span>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="font-bold text-white text-sm">{repo.name}</span>
+                            <FaExternalLinkAlt className="text-white/50 text-xs" />
+                        </div>
+
+                        {repo.description && (
+                            <p className="text-white/70 text-xs mb-3 line-clamp-2">
+                                {repo.description}
+                            </p>
+                        )}
+
+                        <div className="flex items-center gap-4 text-xs">
+                            <span className="flex items-center gap-1 text-yellow-400">
+                                <FaStar /> {repo.stargazers_count}
+                            </span>
+                            <span className="flex items-center gap-1 text-blue-400">
+                                <FaCodeBranch /> {repo.forks_count}
+                            </span>
+                            {repo.language && (
+                                <span
+                                    className="px-2 py-0.5 rounded"
+                                    style={{
+                                        backgroundColor: color + "33",
+                                        color: color,
+                                    }}
+                                >
+                                    {repo.language}
+                                </span>
                             )}
                         </div>
-                        {commit.language && (
-                            <div
-                                className="mt-2 text-xs px-2 py-1 rounded inline-block"
-                                style={{
-                                    backgroundColor: color + "33",
-                                    color: color,
-                                }}
-                            >
-                                {commit.language}
-                            </div>
-                        )}
                     </div>
                 </Html>
             )}
@@ -95,15 +110,15 @@ function ActivityMarker({ position, commit, isSelected, onClick, heatmapMode }: 
 
 // Earth Component
 function Earth({
-    commits,
-    selectedCommit,
-    onCommitClick,
+    repos,
+    selectedRepo,
+    onRepoClick,
     heatmapMode,
     globeSegments,
 }: {
-    commits: EnhancedCommit[];
-    selectedCommit: EnhancedCommit | null;
-    onCommitClick: (commit: EnhancedCommit) => void;
+    repos: GitHubRepo[];
+    selectedRepo: GitHubRepo | null;
+    onRepoClick: (repo: GitHubRepo) => void;
     heatmapMode: boolean;
     globeSegments: number;
 }) {
@@ -153,16 +168,16 @@ function Earth({
                 />
             </Sphere>
 
-            {/* Activity markers */}
-            {commits.map((commit) => {
-                const position = latLngToVector3(commit.coordinates.lat, commit.coordinates.lng, 1.02);
+            {/* Repository markers */}
+            {repos.map((repo) => {
+                const position = latLngToVector3(repo.coordinates.lat, repo.coordinates.lng, 1.02);
                 return (
-                    <ActivityMarker
-                        key={commit.sha}
+                    <RepoMarker
+                        key={repo.id}
                         position={position}
-                        commit={commit}
-                        isSelected={selectedCommit?.sha === commit.sha}
-                        onClick={() => onCommitClick(commit)}
+                        repo={repo}
+                        isSelected={selectedRepo?.id === repo.id}
+                        onClick={() => onRepoClick(repo)}
                         heatmapMode={heatmapMode}
                     />
                 );
@@ -173,15 +188,15 @@ function Earth({
 
 // Main Scene
 function Scene({
-    commits,
-    selectedCommit,
-    onCommitClick,
+    repos,
+    selectedRepo,
+    onRepoClick,
     heatmapMode,
     globeSegments,
 }: {
-    commits: EnhancedCommit[];
-    selectedCommit: EnhancedCommit | null;
-    onCommitClick: (commit: EnhancedCommit) => void;
+    repos: GitHubRepo[];
+    selectedRepo: GitHubRepo | null;
+    onRepoClick: (repo: GitHubRepo) => void;
     heatmapMode: boolean;
     globeSegments: number;
 }) {
@@ -196,9 +211,9 @@ function Scene({
             />
 
             <Earth
-                commits={commits}
-                selectedCommit={selectedCommit}
-                onCommitClick={onCommitClick}
+                repos={repos}
+                selectedRepo={selectedRepo}
+                onRepoClick={onRepoClick}
                 heatmapMode={heatmapMode}
                 globeSegments={globeSegments}
             />
@@ -227,19 +242,17 @@ function LoadingFallback() {
 
 // Main Component
 export default function EnhancedGlobe({
-    commits,
-    selectedCommit,
-    onCommitClick,
+    repos,
+    selectedRepo,
+    onRepoClick,
     heatmapMode,
 }: EnhancedGlobeProps) {
     const [globeSegments, setGlobeSegments] = useState(64);
     const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        // Mount ready
         setIsReady(true);
 
-        // Subscribe to quality changes
         adaptiveFPS.subscribe("enhanced-globe", (tier, settings) => {
             setGlobeSegments(settings.globeSegments);
         });
@@ -269,9 +282,9 @@ export default function EnhancedGlobe({
             >
                 <Suspense fallback={<LoadingFallback />}>
                     <Scene
-                        commits={commits}
-                        selectedCommit={selectedCommit}
-                        onCommitClick={onCommitClick}
+                        repos={repos}
+                        selectedRepo={selectedRepo}
+                        onRepoClick={onRepoClick}
                         heatmapMode={heatmapMode}
                         globeSegments={globeSegments}
                     />

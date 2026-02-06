@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { FaGithub, FaStar, FaCodeBranch, FaSyncAlt } from "react-icons/fa";
+import { FaGithub, FaStar, FaCodeBranch, FaSyncAlt, FaBook } from "react-icons/fa";
 import { fetchGitHubActivity } from "@/lib/github/githubDataService";
-import type { GitHubActivityData, EnhancedCommit } from "@/lib/github/githubDataService";
-import ActivityTimeline from "@/components/github/ActivityTimeline";
+import type { GitHubActivityData, GitHubRepo } from "@/lib/github/githubDataService";
+import RepoTimeline from "@/components/github/RepoTimeline";
 import LanguageChart from "@/components/github/LanguageChart";
 import HeatmapToggle from "@/components/github/HeatmapToggle";
 
@@ -24,12 +24,11 @@ export default function GitHubActivityClient() {
     const [data, setData] = useState<GitHubActivityData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedCommit, setSelectedCommit] = useState<EnhancedCommit | null>(null);
+    const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null);
     const [heatmapMode, setHeatmapMode] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false);
 
-    // Fetch data on mount
     useEffect(() => {
         loadData();
     }, []);
@@ -50,25 +49,24 @@ export default function GitHubActivityClient() {
     const handleRefresh = async () => {
         setRefreshing(true);
         try {
-            // Clear localStorage cache
-            localStorage.removeItem("github_activity_enhanced");
+            localStorage.removeItem("github_repos_data");
             await loadData();
         } finally {
             setRefreshing(false);
         }
     };
 
-    const handleCommitClick = (commit: EnhancedCommit) => {
-        setSelectedCommit(commit === selectedCommit ? null : commit);
+    const handleRepoClick = (repo: GitHubRepo) => {
+        setSelectedRepo(repo === selectedRepo ? null : repo);
     };
 
     const handleLanguageClick = (language: string) => {
         setSelectedLanguage(language === selectedLanguage ? null : language);
     };
 
-    // Filter commits by selected language
-    const filteredCommits = data?.commits.filter((c) =>
-        selectedLanguage ? c.language === selectedLanguage : true
+    // Filter repos by selected language
+    const filteredRepos = data?.repos.filter((r) =>
+        selectedLanguage ? r.language === selectedLanguage : true
     ) || [];
 
     if (loading) {
@@ -76,7 +74,7 @@ export default function GitHubActivityClient() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
-                    <div className="text-white/70">Loading GitHub activity...</div>
+                    <div className="text-white/70">Loading GitHub repositories...</div>
                 </div>
             </div>
         );
@@ -107,18 +105,18 @@ export default function GitHubActivityClient() {
                 className="text-center mb-8 px-4"
             >
                 <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Live GitHub Activity
+                    My GitHub Repositories
                 </h1>
                 <p className="text-white/70 max-w-2xl mx-auto">
-                    Explore my recent contributions across the globe. Each glowing marker
-                    represents a commit or update to my projects.
+                    Explore my open-source projects across the globe. Each glowing marker
+                    represents a repository. Click to learn more.
                 </p>
 
                 {/* Stats Bar */}
-                <div className="flex items-center justify-center gap-8 mt-6">
+                <div className="flex items-center justify-center gap-8 mt-6 flex-wrap">
                     <div className="flex items-center gap-2 text-white/80">
-                        <FaGithub className="text-xl" />
-                        <span>{data.commits.length} commits</span>
+                        <FaBook className="text-xl" />
+                        <span>{data.totalRepos} repos</span>
                     </div>
                     <div className="flex items-center gap-2 text-yellow-400">
                         <FaStar className="text-xl" />
@@ -154,20 +152,20 @@ export default function GitHubActivityClient() {
                 {/* Center: Globe */}
                 <div className="lg:col-span-2 h-[500px] bg-black/20 rounded-xl border border-white/10 overflow-hidden">
                     <EnhancedGlobe
-                        commits={filteredCommits}
-                        selectedCommit={selectedCommit}
-                        onCommitClick={handleCommitClick}
+                        repos={filteredRepos}
+                        selectedRepo={selectedRepo}
+                        onRepoClick={handleRepoClick}
                         heatmapMode={heatmapMode}
                     />
                 </div>
 
                 {/* Right: Timeline */}
                 <div className="lg:col-span-1 h-[500px] rounded-xl overflow-hidden">
-                    <ActivityTimeline
-                        commits={filteredCommits}
+                    <RepoTimeline
+                        repos={filteredRepos}
                         languages={data.languages}
-                        onCommitClick={handleCommitClick}
-                        selectedCommit={selectedCommit}
+                        onRepoClick={handleRepoClick}
+                        selectedRepo={selectedRepo}
                     />
                 </div>
             </div>

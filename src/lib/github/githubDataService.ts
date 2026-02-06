@@ -1,9 +1,10 @@
 /**
  * Enhanced GitHub Data Service
- * Fetches repos, commits, languages, and contribution data
+ * Fetches repos, languages, and contribution data
  */
 
 export interface GitHubRepo {
+    id: number;
     name: string;
     full_name: string;
     description: string | null;
@@ -12,15 +13,6 @@ export interface GitHubRepo {
     forks_count: number;
     updated_at: string;
     html_url: string;
-}
-
-export interface EnhancedCommit {
-    sha: string;
-    message: string;
-    date: string;
-    repo: string;
-    language: string | null;
-    stars: number;
     coordinates: {
         lat: number;
         lng: number;
@@ -35,11 +27,11 @@ export interface LanguageStats {
 }
 
 export interface GitHubActivityData {
-    commits: EnhancedCommit[];
     repos: GitHubRepo[];
     languages: LanguageStats[];
     totalStars: number;
     totalForks: number;
+    totalRepos: number;
     lastUpdated: string;
 }
 
@@ -63,7 +55,7 @@ const LANGUAGE_COLORS: Record<string, string> = {
     React: '#61dafb',
 };
 
-const CACHE_KEY = 'github_activity_enhanced';
+const CACHE_KEY = 'github_repos_data';
 const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
 /**
@@ -83,7 +75,6 @@ function getCachedData(): GitHubActivityData | null {
             return data;
         }
 
-        // Cache expired
         localStorage.removeItem(CACHE_KEY);
         return null;
     } catch {
@@ -111,10 +102,9 @@ function setCachedData(data: GitHubActivityData): void {
 }
 
 /**
- * Fetch GitHub activity data from API route
+ * Fetch GitHub data from API route
  */
 export async function fetchGitHubActivity(): Promise<GitHubActivityData> {
-    // Check cache first
     const cached = getCachedData();
     if (cached) {
         return cached;
@@ -128,24 +118,12 @@ export async function fetchGitHubActivity(): Promise<GitHubActivityData> {
         }
 
         const data: GitHubActivityData = await response.json();
-
-        // Cache the result
         setCachedData(data);
-
         return data;
     } catch (error) {
-        console.error('Failed to fetch GitHub activity:', error);
-
-        // Return mock data as fallback
+        console.error('Failed to fetch GitHub data:', error);
         return getMockData();
     }
-}
-
-/**
- * Get commit coordinates (geo-location simulation)
- */
-export function getCommitCoordinates(commit: EnhancedCommit): { lat: number; lng: number } {
-    return commit.coordinates;
 }
 
 /**
@@ -160,49 +138,58 @@ export function getLanguageColor(language: string | null): string {
  * Mock data for fallback
  */
 function getMockData(): GitHubActivityData {
-    const mockCommits: EnhancedCommit[] = [
+    const mockRepos: GitHubRepo[] = [
         {
-            sha: 'mock1',
-            message: 'Add adaptive FPS system',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-            repo: 'portfolio',
+            id: 1,
+            name: 'portfolio',
+            full_name: 'Ktripathi2611/portfolio',
+            description: 'My personal portfolio website with 3D effects',
             language: 'TypeScript',
-            stars: 15,
-            coordinates: { lat: 28.6139, lng: 77.2090 }, // Delhi
+            stargazers_count: 15,
+            forks_count: 3,
+            updated_at: new Date().toISOString(),
+            html_url: 'https://github.com/Ktripathi2611/portfolio',
+            coordinates: { lat: 28.6139, lng: 77.2090 },
         },
         {
-            sha: 'mock2',
-            message: 'Implement 3D globe visualization',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-            repo: 'portfolio',
-            language: 'TypeScript',
-            stars: 15,
-            coordinates: { lat: 37.7749, lng: -122.4194 }, // San Francisco
+            id: 2,
+            name: 'react-globe',
+            full_name: 'Ktripathi2611/react-globe',
+            description: 'Interactive 3D globe component',
+            language: 'JavaScript',
+            stargazers_count: 8,
+            forks_count: 2,
+            updated_at: new Date(Date.now() - 86400000).toISOString(),
+            html_url: 'https://github.com/Ktripathi2611/react-globe',
+            coordinates: { lat: 37.7749, lng: -122.4194 },
         },
         {
-            sha: 'mock3',
-            message: 'Create AI assistant component',
-            date: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-            repo: 'portfolio',
-            language: 'TypeScript',
-            stars: 15,
-            coordinates: { lat: 51.5074, lng: -0.1278 }, // London
+            id: 3,
+            name: 'ai-assistant',
+            full_name: 'Ktripathi2611/ai-assistant',
+            description: 'AI-powered chat assistant',
+            language: 'Python',
+            stargazers_count: 12,
+            forks_count: 4,
+            updated_at: new Date(Date.now() - 172800000).toISOString(),
+            html_url: 'https://github.com/Ktripathi2611/ai-assistant',
+            coordinates: { lat: 51.5074, lng: -0.1278 },
         },
     ];
 
     const mockLanguages: LanguageStats[] = [
-        { language: 'TypeScript', count: 25, percentage: 60, color: LANGUAGE_COLORS.TypeScript },
-        { language: 'JavaScript', count: 10, percentage: 24, color: LANGUAGE_COLORS.JavaScript },
-        { language: 'Python', count: 5, percentage: 12, color: LANGUAGE_COLORS.Python },
-        { language: 'CSS', count: 2, percentage: 4, color: LANGUAGE_COLORS.CSS },
+        { language: 'TypeScript', count: 8, percentage: 40, color: LANGUAGE_COLORS.TypeScript },
+        { language: 'JavaScript', count: 5, percentage: 25, color: LANGUAGE_COLORS.JavaScript },
+        { language: 'Python', count: 4, percentage: 20, color: LANGUAGE_COLORS.Python },
+        { language: 'CSS', count: 3, percentage: 15, color: LANGUAGE_COLORS.CSS },
     ];
 
     return {
-        commits: mockCommits,
-        repos: [],
+        repos: mockRepos,
         languages: mockLanguages,
-        totalStars: 15,
-        totalForks: 3,
+        totalStars: 35,
+        totalForks: 9,
+        totalRepos: 3,
         lastUpdated: new Date().toISOString(),
     };
 }
