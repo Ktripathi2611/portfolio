@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     description:
         "Explore projects built by Kushal Tripathi, a Python Developer in Mumbai. Featuring Django applications, REST APIs, automation tools, and full-stack solutions.",
     alternates: {
-        canonical: "https://kushaltripathi.dev/projects",
+        canonical: "https://kushaltripathi.vercel.app/projects",
     },
     openGraph: {
         title: "Projects | Kushal Tripathi - Python & Django Portfolio",
         description:
             "Explore projects built by Kushal Tripathi, a Python Developer in Mumbai.",
-        url: "https://kushaltripathi.dev/projects",
+        url: "https://kushaltripathi.vercel.app/projects",
     },
 };
 

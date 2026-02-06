@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: ['/api/', '/_next/'],
             },
         ],
-        sitemap: 'https://kushaltripathi.dev/sitemap.xml',
+        sitemap: 'https://kushaltripathi.vercel.app/sitemap.xml',
     };
 }

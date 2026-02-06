@@ -31,7 +31,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kushaltripathi.dev"),
+  metadataBase: new URL("https://kushaltripathi.vercel.app"),
   title: {
     default: "Kushal Tripathi | Python Developer & Backend Engineer in Mumbai",
     template: "%s | Kushal Tripathi",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     "Full Stack Developer",
     "Web Developer India",
   ],
-  authors: [{ name: "Kushal Tripathi", url: "https://kushaltripathi.dev" }],
+  authors: [{ name: "Kushal Tripathi", url: "https://kushaltripathi.vercel.app" }],
   creator: "Kushal Tripathi",
   publisher: "Kushal Tripathi",
   robots: {
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://kushaltripathi.dev",
+    url: "https://kushaltripathi.vercel.app",
     siteName: "Kushal Tripathi Portfolio",
     title: "Kushal Tripathi | Python Developer & Backend Engineer",
     description:
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://kushaltripathi.dev",
+    canonical: "https://kushaltripathi.vercel.app",
   },
   verification: {
     google: "your-google-verification-code",

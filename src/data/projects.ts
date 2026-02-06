@@ -68,7 +68,7 @@ export const projects: Project[] = [
         longDescription: "This very portfolio you're viewing! Built with Next.js, Three.js, and Framer Motion featuring cinematic animations, 3D particle backgrounds, and optimal SEO implementation.",
         technologies: ["Next.js", "TypeScript", "Three.js", "Framer Motion", "Tailwind CSS"],
         githubUrl: "https://github.com/Ktripathi2611",
-        liveUrl: "https://kushaltripathi.dev",
+        liveUrl: "https://kushaltripathi.vercel.app",
         featured: false,
         image: "/images/projects/portfolio.jpg",
     },

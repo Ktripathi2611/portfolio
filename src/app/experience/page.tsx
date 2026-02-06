@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     description:
         "Professional experience of Kushal Tripathi as a Python Developer and Backend Developer in Mumbai. Explore my journey in software development.",
     alternates: {
-        canonical: "https://kushaltripathi.dev/experience",
+        canonical: "https://kushaltripathi.vercel.app/experience",
     },
     openGraph: {
         title: "Experience | Kushal Tripathi - Backend Developer",
         description:
             "Professional experience of Kushal Tripathi as a Python Developer and Backend Developer in Mumbai.",
-        url: "https://kushaltripathi.dev/experience",
+        url: "https://kushaltripathi.vercel.app/experience",
     },
 };
 

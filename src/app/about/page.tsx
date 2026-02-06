@@ -21,13 +21,13 @@ export const metadata: Metadata = {
     description:
         "Learn about Kushal Tripathi, a Python Developer and Backend Engineer based in Mumbai, India. Discover my skills, experience, and passion for building scalable applications.",
     alternates: {
-        canonical: "https://kushaltripathi.dev/about",
+        canonical: "https://kushaltripathi.vercel.app/about",
     },
     openGraph: {
         title: "About | Kushal Tripathi - Python Developer",
         description:
             "Learn about Kushal Tripathi, a Python Developer and Backend Engineer based in Mumbai.",
-        url: "https://kushaltripathi.dev/about",
+        url: "https://kushaltripathi.vercel.app/about",
     },
 };
 
