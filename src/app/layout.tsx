@@ -10,6 +10,7 @@ import BehaviorTrackingWrapper from "@/components/ai/BehaviorTrackingWrapper";
 import ImmersiveWrapper from "@/components/immersive/ImmersiveWrapper";
 import PerformanceDebugPanel from "@/components/debug/PerformanceDebugPanel";
 import { getJsonLd } from "@/lib/jsonld";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -122,6 +123,7 @@ export default function RootLayout({
           </BehaviorTrackingWrapper>
           <PerformanceDebugPanel />
         </ImmersiveWrapper>
+        <Analytics />
       </body>
     </html>
   );
