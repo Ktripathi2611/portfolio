@@ -5,6 +5,7 @@ import Link from "next/link";
 import Section from "@/components/layout/Section";
 import ContentContainer from "@/components/layout/ContentContainer";
 import PageTransition from "@/components/layout/PageTransition";
+import GlobeSection from "@/components/globe/GlobeSection";
 
 // Dynamic imports for performance
 const HeroSection = dynamic(() => import("@/components/hero/HeroSection"), {
@@ -40,6 +41,9 @@ export default function Home() {
           </div>
         </ContentContainer>
       </Section>
+
+      {/* GitHub Activity Globe */}
+      <GlobeSection />
 
       {/* Quick Stats */}
       <Section size="sm">

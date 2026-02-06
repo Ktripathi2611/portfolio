@@ -5,6 +5,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ScrollProgress from "@/components/layout/ScrollProgress";
 import BackToTop from "@/components/ui/BackToTop";
+import AIOrb from "@/components/ai/AIOrb";
+import BehaviorTrackingWrapper from "@/components/ai/BehaviorTrackingWrapper";
+import ImmersiveWrapper from "@/components/immersive/ImmersiveWrapper";
+import PerformanceDebugPanel from "@/components/debug/PerformanceDebugPanel";
 import { getJsonLd } from "@/lib/jsonld";
 
 const inter = Inter({
@@ -102,16 +106,22 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ScrollProgress />
-        <Navbar />
+        <ImmersiveWrapper>
+          <BehaviorTrackingWrapper>
+            <ScrollProgress />
+            <Navbar />
 
-        {/* Main content with navbar offset */}
-        <main className="main-content">
-          {children}
-        </main>
+            {/* Main content with navbar offset */}
+            <main className="main-content">
+              {children}
+            </main>
 
-        <Footer />
-        <BackToTop />
+            <Footer />
+            <BackToTop />
+            <AIOrb />
+          </BehaviorTrackingWrapper>
+          <PerformanceDebugPanel />
+        </ImmersiveWrapper>
       </body>
     </html>
   );
