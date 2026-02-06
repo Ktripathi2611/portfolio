@@ -44,7 +44,7 @@ export default function TimelineItem({ experience, index }: TimelineItemProps) {
 
                     {/* Role */}
                     <h3 className="text-title font-display" style={{ color: 'var(--color-text)' }}>
-                        {experience.role}
+                        {experience.title}
                     </h3>
 
                     {/* Company */}
